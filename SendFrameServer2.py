@@ -8,7 +8,7 @@ import numpy as np
 from picamera.array import PiRGBArray
 from picamera import PiCamera
 
-HOST = '192.168.0.103'
+HOST = '192.168.0.101'
 PORT = 50009
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind((HOST, PORT))

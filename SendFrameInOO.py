@@ -54,9 +54,11 @@ class PiImageServer:
 
 
 def main():
+    # Initialize server
     ImageServer = PiImageServer()
     ImageServer.openServer('192.168.0.103', 50009)
-    
+
+    # Initialize pi camera
     timeStart = time.time()
     camera = PiCamera()
     rawCapture = PiRGBArray(camera)
