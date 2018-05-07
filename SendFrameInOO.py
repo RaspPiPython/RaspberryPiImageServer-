@@ -46,11 +46,21 @@ class PiImageServer:
 
     def sendFrame(self, frameData):
         self.counter += 1
-        print('Sending frame ', self.counter)
+        print('Sending frame', self.counter)
         frameDataLen = len(frameData)
         lenData = pickle.dumps(frameDataLen)        
         self.conn.send(lenData)        
         self.conn.send(frameData)
+        
+    def recvCommand(self):
+        commandData = self.conn.recv(3)
+        command = commandData.decode()
+        print('Command {} received'.format(command))
+        return command
+
+    def sendCommand(self, command):
+        self.conn.send(encode(command))
+        print('Command {} sent'.format(command))
 
 
 def main():

@@ -7,11 +7,12 @@ import numpy as np
 from picamera.array import PiRGBArray
 from picamera import PiCamera
 from SendFrameInOO import PiImageServer
+import CarControlFunc 
 
 def main():
-    # Initialize the server and time stamp
-    ImageServer = PiImageServer()
-    ImageServer.openServer('169.254.233.189', 50009)    
+    # initialize the server and time stamp
+    ImageServer = PiImageServer()    
+    ImageServer.openServer('192.168.1.89', 50009)    
     #timeStart = time.time()
 
     # Initialize the camera object
@@ -24,11 +25,14 @@ def main():
     rawCapture = PiRGBArray(camera)
     
     # allow the camera to warmup
-    time.sleep(0.1)
+    time.sleep(1)
     
     #camera.capture(rawCapture, format='bgr')
     #image = rawCapture.array
     #imageData = pickle.dumps(image)
+
+    # initialize GPIO pins
+    Control = CarControlFunc.PiCarCtrl()
 
     # capture frames from the camera
     print('<INFO> Preparing to stream video...')
@@ -38,18 +42,37 @@ def main():
         # grab the raw NumPy array representing the image, then initialize 
         # the timestamp and occupied/unoccupied text
         image = frame.array               
-        #cv2.imshow("Frame", image)
-        #key = cv2.waitKey(1) & 0xFF # catch any key input
+        cv2.imshow('Frame', image)
+        key = cv2.waitKey(1) & 0xFF # catch any key input
         #print(image[0])
         imageData = pickle.dumps(image) 
         ImageServer.sendFrame(imageData) # send the frame data
+
+        # receive command from laptop and print it
+        command = ImageServer.recvCommand()
+        if command == 'STR':
+            #Control.forward()
+            pass
+        elif command == 'LFT':
+            #Control.left()
+            pass
+        elif command == 'RGT':
+            #Control.right()
+            pass
+        elif command == 'STP':
+            #Control.brake()
+            pass
+        elif command == 'BYE':
+            print('BYE received, ending stream session...')
+            break
+        
 
         # clear the stream in preparation for the next one
         rawCapture.truncate(0)       
 
         # if the 'q' key is pressed, break from the loop
-        #if key == ord("q"):           
-        #    break
+        if key == ord("q"):           
+            break
     print('<INFO> Video stream ended')
     ImageServer.closeServer()
 
