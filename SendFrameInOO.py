@@ -44,11 +44,19 @@ class PiImageServer:
         print('Sending image data')
         self.conn.send(imageData)
 
+    def sendFrame0(self, frameData):
+        self.counter += 1
+        frameDataLen = len(frameData)
+        lenData = pickle.dumps(frameDataLen)
+        print('Sending frame', self.counter, 'Length is', frameDataLen)
+        self.conn.send(lenData)        
+        self.conn.send(frameData)
+
     def sendFrame(self, frameData):
         self.counter += 1
-        print('Sending frame', self.counter)
         frameDataLen = len(frameData)
-        lenData = pickle.dumps(frameDataLen)        
+        lenData = '{:06}'.format(frameDataLen).encode()
+        print('Sending frame', self.counter, 'Length is', frameDataLen)
         self.conn.send(lenData)        
         self.conn.send(frameData)
         
